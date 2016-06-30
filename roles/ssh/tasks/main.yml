@@ -1,0 +1,40 @@
+---
+- name: ensure ssh is installed
+  apt:
+    pkg: openssh-server
+    state: latest
+    update_cache: true
+    cache_valid_time: 3600
+  notify: restart ssh
+
+- name: Change ssh port
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^Port\s'
+    line: "Port {{ ssh_port }}"
+    state: present
+  notify: restart ssh
+
+- name: Disable root login
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin'
+    line: "PermitRootLogin no"
+    state: present
+  notify: restart ssh
+
+- name: Disable password authentication
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: "PasswordAuthentication no"
+    state: present
+  notify: restart ssh
+
+- name: Only allow SSH access for the newly created user
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    insertafter: '^StrictModes'
+    line: "AllowUsers {{ user }}"
+    state: present
+  notify: restart ssh

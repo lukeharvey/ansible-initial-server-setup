@@ -1,0 +1,29 @@
+---
+- name: Allow ssh traffic on custom port
+  ufw:
+    rule: allow
+    port: "{{ ssh_port }}"
+    proto: tcp
+
+- name: Allow http traffic on port 80
+  ufw:
+    rule: allow
+    port: 80
+    proto: tcp
+
+- name: Allow https traffic on port 443
+  ufw:
+    rule: allow
+    port: 443
+    proto: tcp
+
+- name: Allow access to admin tools on port 22222
+  ufw:
+    rule: allow
+    port: 22222
+    proto: tcp
+
+- name: Enable firewall
+  ufw:
+    state: enabled
+    policy: deny

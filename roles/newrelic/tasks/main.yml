@@ -1,0 +1,27 @@
+---
+- name: Install GPG key
+  when: enable_newrelic
+  apt_key:
+    url: http://download.newrelic.com/548C16BF.gpg
+    state: present
+  register: gpg_key_installed
+
+- name: Add New Relic apt repository
+  when: gpg_key_installed|succeeded
+  copy:
+    content: "deb http://apt.newrelic.com/debian/ newrelic non-free"
+    dest: /etc/apt/sources.list.d/newrelic.list
+  register: newrelic_repo_installed
+
+- name: Install New Relic system monitor
+  when: newrelic_repo_installed|succeeded
+  apt:
+    name: newrelic-sysmond
+    state: latest
+    update_cache: yes
+  register: newrelic_installed
+
+- name: Configure New Relic license key
+  when: newrelic_installed|succeeded
+  command: nrsysmond-config --set license_key={{ newrelic_license_key }}
+  notify: start newrelic

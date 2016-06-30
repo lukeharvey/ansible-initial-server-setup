@@ -1,0 +1,20 @@
+---
+- name: Set hostname
+  hostname:
+    name: "{{ fqdn }}"
+  notify: restart hostname
+
+- name: Add correct IP address to hosts file
+  lineinfile:
+    dest: /etc/hosts
+    insertafter: '^127\.0\.0\.1\slocalhost'
+    line: "{{ ansible_default_ipv4.address }} {{ fqdn }} {{ hostname }}"
+    state: present
+  notify: restart hostname
+
+- name: Remove default line from hosts file
+  lineinfile:
+    dest: /etc/hosts
+    regexp: '^127\.0\.1\.1'
+    state: absent
+  notify: restart hostname

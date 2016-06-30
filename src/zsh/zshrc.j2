@@ -1,0 +1,24 @@
+# Path to your oh-my-zsh installation.
+export ZSH=/home/{{ user }}/.oh-my-zsh
+
+# Set name of theme to load
+ZSH_THEME="guru2"
+
+# Enable oh my zsh plugins
+plugins=(git)
+
+# Load oh my zsh
+source $ZSH/oh-my-zsh.sh
+
+# Load z
+source ~/z.sh
+
+# Configure PATH
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+
+# Lines configured by zsh-newuser-install
+HISTFILE=~/.histfile
+HISTSIZE=1000
+SAVEHIST=1000
+setopt appendhistory autocd extendedglob
+bindkey -e

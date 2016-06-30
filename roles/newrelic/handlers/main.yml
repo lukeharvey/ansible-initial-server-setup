@@ -1,0 +1,5 @@
+---
+- name: start newrelic
+  service:
+    name: newrelic-sysmond
+    state: started

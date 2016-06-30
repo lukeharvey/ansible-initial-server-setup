@@ -1,0 +1,56 @@
+---
+- name: Install zsh
+  when: enable_custom_shell
+  apt:
+    name: zsh
+    state: latest
+  register: zsh_installed
+
+- name: Clone oh-my-zsh
+  when: enable_custom_shell
+  git:
+    repo: https://github.com/robbyrussell/oh-my-zsh.git
+    dest: /home/{{ user }}/.oh-my-zsh
+  register: oh_my_zsh_cloned
+
+- name: Set correct owner for oh-my-zsh files
+  when: oh_my_zsh_cloned|succeeded
+  file:
+    path: /home/{{ user }}/.oh-my-zsh/
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: u=rwX,g=rX,o=rX
+    recurse: yes
+
+- name: Download custom oh-my-zsh theme
+  when: oh_my_zsh_cloned|succeeded
+  get_url:
+    url: https://gist.githubusercontent.com/lukeharvey/992fca16c6f5d1b66f75b9e1b17ab308/raw/guru2.zsh-theme
+    dest: /home/{{ user }}/.oh-my-zsh/themes/guru2.zsh-theme
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0644
+
+- name: Download z.sh
+  when: enable_custom_shell
+  get_url:
+    url: https://raw.githubusercontent.com/rupa/z/master/z.sh
+    dest: /home/{{ user }}/z.sh
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0644
+
+- name: Copy over zshrc
+  when: enable_custom_shell
+  template:
+    src: ./src/zsh/zshrc.j2
+    dest: /home/{{ user }}/.zshrc
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0644
+
+- name: Set zsh as default shell
+  when: zsh_installed|succeeded
+  user:
+    name: "{{ user }}"
+    shell: /bin/zsh
